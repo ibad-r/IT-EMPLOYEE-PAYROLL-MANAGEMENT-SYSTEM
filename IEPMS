@@ -1,0 +1,183 @@
+#include<iostream>
+#include<string>
+using namespace std;
+
+struct Employee_PayRoll
+    {
+        string name,department,position;
+        int id;
+        double hourlyRate,hours,overTime;
+        char userChoice;
+    };    
+    //password
+int authenticateUser()
+    {
+    int enteredPassword;
+    cout << "\t\t Enter Password: ";
+    cin>>enteredPassword;
+
+    return enteredPassword == 7970;
+    }
+    //---------------------calculate salary-----------------------
+    //gross salary
+double grossSalary(const Employee_PayRoll& employees)
+    {
+        double regularSalary =  employees.hours * employees.hourlyRate;
+        double overTimepPay = 0.0;
+        if (employees.overTime > 0)
+        {
+            overTimepPay = employees.hourlyRate * 1.5 * employees.overTime;
+        }
+        else
+        {
+            overTimepPay = 0.0;
+        }
+        double grossSalary = regularSalary + overTimepPay;
+        return grossSalary;
+    }
+    // deduction
+double calculateTax(const Employee_PayRoll& employees)
+{
+    double salary = grossSalary(employees);
+    double tax = 0.0;
+    if (salary <= 100000)
+    {
+        tax = salary * (1.3 / 100);
+    }
+    else if (salary > 100000 && salary < 500000)
+    {
+        tax = salary * (6.9 / 100);
+    }
+    else if (salary >= 500000)
+    {
+        tax = salary * (18.3 / 100);
+    }
+    
+    return tax;
+}
+//deductions
+double calculateDeduction(const Employee_PayRoll& employees)
+{
+    double deductionAmount = 0.0;
+    if (employees.position == "Manager" || employees.position == "manager")
+    {
+        deductionAmount = 700;
+    }
+    else if (employees.position == "Developer" || employees.position == "developer")
+    {
+        deductionAmount = 500;
+    }
+    else if (employees.position == "Analyst" || employees.position == "analyst")
+    {
+        deductionAmount = 600;
+    }
+
+    return deductionAmount;
+}    
+//total salary
+double totalSalary(const Employee_PayRoll& employees)
+{
+    double salary = grossSalary(employees);
+    double tax = calculateTax(employees);
+    double deduction = calculateDeduction(employees);
+    double totalSalary = 0.0;
+    totalSalary =  salary - tax - deduction;
+    
+    return totalSalary;
+}
+
+
+int main()
+{
+    cout<<endl;
+    cout<<endl;
+    cout<<"------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"<<endl;
+    cout <<endl;
+    cout<<"\t\t\t\t\t\t\t\t IT EMPLOYEES PAYROLL SYSTEM\t\t\t"<<endl;
+    cout <<endl;
+    cout<<"------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"<<endl;
+    cout <<endl;
+
+    int attempts = 0;
+    while (attempts < 3 && !authenticateUser()) {
+    cout << "Incorrect password. Try again." << endl;
+    attempts++;
+    }
+    if (attempts == 3) {
+        cout << "Too many failed attempts. Please try again later." << endl;
+        exit(0);
+    }
+
+
+    cout<<endl;
+    cout << "\t\t\t\t\t\t\t\t Welcome to the Payroll System!" << endl;
+    cout<<endl;
+    cout<<endl;
+        //------------------------------INPUT----------------------------
+    int size;
+    cout << "\t\t Enter Employees Information..."<<endl;
+    cout << endl;
+    cout << "\t\t Enter Number of Employees: ";
+    cin >> size;
+    cin.ignore();
+    cout<<endl;
+    Employee_PayRoll employees[size];
+    for (int i = 0; i < size; i++)
+    {
+        cout << "\t\t Employee "<<i+1<<":"<<endl;
+        cout << "\t\t\t Name: ";
+        getline(cin, employees[i].name);
+        cout << "\t\t\t EMPLOYEE I'D: ";
+        cin >> employees[i].id;
+        cout << "\t\t\t Department: ";
+        cin >> employees[i].department;
+        cout << "\t\t\t Position: ";
+        cin >> employees[i].position;
+        cout << "\t\t\t Hourly Rate: ";
+        cin >> employees[i].hourlyRate;
+        cout << "\t\t\t Hours Worked: ";
+        cin >> employees[i].hours;
+        cin.ignore();
+        cout << "\t\t do salary employee "<<i+1<< "get overtime (y/n): ";
+        cin >> employees[i].userChoice;
+        cin.ignore();
+        if (employees[i].userChoice == 'y' || employees[i].userChoice == 'Y' )
+        {
+            cout<< "\t\t\t Over Time Hours: ";
+            cin>>employees[i].overTime;
+        }
+        else if (employees[i].userChoice == 'n' || employees[i].userChoice == 'N')
+        {                
+            employees[i].overTime = 0.0;
+        }
+            cout<<endl;
+            cin.ignore();
+        }
+
+        //----------------------------Output-------------------------
+
+    cout <<endl;
+    cout <<endl;
+    cout<<"------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"<<endl;
+    cout <<endl;
+    cout<<"\t\t\t\t\t\t\t\t EMPLOYEES Salaries\t\t\t"<<endl;
+    cout <<endl;
+    cout<<"------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"<<endl;
+    cout <<endl;
+        
+    cout << "\t\t\t-----------------------------------------------------------------------------------------------------------------" << endl;
+    cout << "\t\t\t| I'D\t| NAME\t\t| DEPARTMENT\t| POSITION\t| GROSS EARNING\t| DEDUCTION\t| TAXES\t| TOTAL SALARY\t|" << endl;
+    cout << "\t\t\t-----------------------------------------------------------------------------------------------------------------" << endl;
+    for (int i = 0; i < size; i++)
+    {
+        cout<<"\t\t\t| "<<employees[i].id<<"\t| "<<employees[i].name<<"\t| "<<employees[i].department<<"\t\t| "<<employees[i].position<<"\t| "
+            <<grossSalary(employees[i])<<"  \t| "<<calculateDeduction(employees[i])<<"\t\t| "<<calculateTax(employees[i])<<"  | "
+            <<totalSalary(employees[i])<<"\t| "<<endl;                                                                                 
+    }
+    cout << "\t\t\t------------------------------------------------------------------------------------------------------------------" << endl;
+    cout<<endl;        
+    cout<<endl;  
+    cout<<endl;
+         
+    return 0;
+}
