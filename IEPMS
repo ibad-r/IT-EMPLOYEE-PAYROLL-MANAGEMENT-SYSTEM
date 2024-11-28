@@ -129,6 +129,7 @@ int main()
         getline(cin, employees[i].name);
         cout << "\t\t\t EMPLOYEE I'D: ";
         cin >> employees[i].id;
+        cin.ignore();
         cout << "\t\t\t Department: ";
         cin >> employees[i].department;
         cout << "\t\t\t Position: ";
@@ -137,10 +138,8 @@ int main()
         cin >> employees[i].hourlyRate;
         cout << "\t\t\t Hours Worked: ";
         cin >> employees[i].hours;
-        cin.ignore();
         cout << "\t\t do salary employee "<<i+1<< "get overtime (y/n): ";
         cin >> employees[i].userChoice;
-        cin.ignore();
         if (employees[i].userChoice == 'y' || employees[i].userChoice == 'Y' )
         {
             cout<< "\t\t\t Over Time Hours: ";
@@ -150,8 +149,8 @@ int main()
         {                
             employees[i].overTime = 0.0;
         }
-            cout<<endl;
-            cin.ignore();
+        cin.ignore();
+        cout<<endl;
         }
 
         //----------------------------Output-------------------------
