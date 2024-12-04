@@ -1,182 +1,535 @@
 #include<iostream>
 #include<string>
+#include<iomanip>
 using namespace std;
+//---------------------Login Role Base-------------------------------
+struct User
+{
+    string username;
+    string password;
+    string role; 
+};
+const int MAX_USERS = 2;
+User users[MAX_USERS] = {
+    {"admin", "admin123", "Admin"},
+    {"emp", "emp123", "Employee"}
+};
+string login(){
+    string username, password;
+    cout<<endl;
+    cout<<"========================================="<<endl;
+    cout<<"\t\t Login"<<endl;
+    cout<<"========================================="<<endl;
+    cout<<"Enter username: ";
+    cin>>username;
+    cout<<"Enter Password: ";
+    cin>>password;
 
-struct Employee_PayRoll
+    for (int i = 0; i < MAX_USERS; i++)
     {
-        string name,department,position;
+        if (users[i].username == username && users[i].password == password)
+        {
+            cout << "-----------------------------------------" << endl;
+            cout << "Login Successful! Welcome, " << users[i].role << "." << endl;
+            return users[i].role;
+        }
+    }
+    cout << "-----------------------------------------" << endl;
+    cout << "Invalid Username or Password! Please try again." << endl;
+    return ""; 
+}
+
+// Node for Linked List
+class Node{
+    public:
+        string name;
         int id;
-        double hourlyRate,hours,overTime;
+        string department;
+        string position;
+        double hourlyRate;
+        double overTime;
+        int hours;
         char userChoice;
-    };    
-    //password
-int authenticateUser()
-    {
-    int enteredPassword;
-    cout << "\t\t Enter Password: ";
-    cin>>enteredPassword;
-
-    return enteredPassword == 7970;
-    }
-    //---------------------calculate salary-----------------------
-    //gross salary
-double grossSalary(const Employee_PayRoll& employees)
-    {
-        double regularSalary =  employees.hours * employees.hourlyRate;
-        double overTimepPay = 0.0;
-        if (employees.overTime > 0)
-        {
-            overTimepPay = employees.hourlyRate * 1.5 * employees.overTime;
+        Node* next;
+        Node(string name, int id, string department, string position, double hourlyRate, double overTime, int hours, char userChoice){
+            this->name = name;
+            this->id = id;
+            this->department = department;
+            this->position = position;
+            this->hourlyRate = hourlyRate;
+            this->overTime = overTime;
+            this->hours = hours;
+            this->userChoice = userChoice;
+            this->next = nullptr;
         }
-        else
+};
+
+class leaveRequest{   // Node for Queue
+    public:
+        int empID;
+        string empName;
+        int days;
+        string reason;
+        leaveRequest* next;
+        leaveRequest(int empID, string empName, int days, string reason)
         {
-            overTimepPay = 0.0;
+            this->empID = empID;
+            this->empName = empName;
+            this->days = days;
+            this->reason = reason;
+            this->next = nullptr;
         }
-        double grossSalary = regularSalary + overTimepPay;
-        return grossSalary;
-    }
-    // deduction
-double calculateTax(const Employee_PayRoll& employees)
-{
-    double salary = grossSalary(employees);
-    double tax = 0.0;
-    if (salary <= 100000)
-    {
-        tax = salary * (1.3 / 100);
-    }
-    else if (salary > 100000 && salary < 500000)
-    {
-        tax = salary * (6.9 / 100);
-    }
-    else if (salary >= 500000)
-    {
-        tax = salary * (18.3 / 100);
-    }
-    
-    return tax;
-}
-//deductions
-double calculateDeduction(const Employee_PayRoll& employees)
-{
-    double deductionAmount = 0.0;
-    if (employees.position == "Manager" || employees.position == "manager")
-    {
-        deductionAmount = 700;
-    }
-    else if (employees.position == "Developer" || employees.position == "developer")
-    {
-        deductionAmount = 500;
-    }
-    else if (employees.position == "Analyst" || employees.position == "analyst")
-    {
-        deductionAmount = 600;
+};
+
+class SalaryCalculator {
+public:
+    // Calculate gross salary
+    double grossSalary(const Node& employee) {
+        double regularSalary = employee.hours * employee.hourlyRate;
+        double overTimePay = (employee.overTime > 0) ? (employee.hourlyRate * 1.5 * employee.overTime) : 0.0;
+        return regularSalary + overTimePay;
     }
 
-    return deductionAmount;
-}    
-//total salary
-double totalSalary(const Employee_PayRoll& employees)
-{
-    double salary = grossSalary(employees);
-    double tax = calculateTax(employees);
-    double deduction = calculateDeduction(employees);
-    double totalSalary = 0.0;
-    totalSalary =  salary - tax - deduction;
-    
-    return totalSalary;
-}
-
-
-int main()
-{
-    cout<<endl;
-    cout<<endl;
-    cout<<"------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"<<endl;
-    cout <<endl;
-    cout<<"\t\t\t\t\t\t\t\t IT EMPLOYEES PAYROLL SYSTEM\t\t\t"<<endl;
-    cout <<endl;
-    cout<<"------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"<<endl;
-    cout <<endl;
-
-    int attempts = 0;
-    while (attempts < 3 && !authenticateUser()) {
-    cout << "Incorrect password. Try again." << endl;
-    attempts++;
-    }
-    if (attempts == 3) {
-        cout << "Too many failed attempts. Please try again later." << endl;
-        exit(0);
+    // Calculate tax based on gross salary
+    double calculateTax(const Node& employee) {
+        double salary = grossSalary(employee);
+        if (salary <= 100000) {
+            return salary * 0.013; 
+        } else if (salary <= 500000) {
+            return salary * 0.069; 
+        } else {
+            return salary * 0.183; 
+        }
     }
 
+    // Calculate  deductions based on position
+    double calculateDeduction(const Node& employee) {
+        if (employee.position == "Manager" || employee.position == "manager") {
+            return 700;
+        } else if (employee.position == "Developer" || employee.position == "developer") {
+            return 500;
+        } else if (employee.position == "Analyst" || employee.position == "analyst") {
+            return 600;
+        }
+        return 0.0;
+    }
 
-    cout<<endl;
-    cout << "\t\t\t\t\t\t\t\t Welcome to the Payroll System!" << endl;
-    cout<<endl;
-    cout<<endl;
-        //------------------------------INPUT----------------------------
-    int size;
-    cout << "\t\t Enter Employees Information..."<<endl;
+    // Calculate total salary after deductions
+    double netSalary(const Node& employee) {
+        double salary = grossSalary(employee);
+        double tax = calculateTax(employee);
+        double deduction = calculateDeduction(employee);
+        return salary - tax - deduction;
+    }
+};
+// Linked List to store Employee Dataa
+class EmployeePayroll{
+    private:
+        Node* head;
+    public:
+        EmployeePayroll(){
+            head = nullptr;
+        }
+
+        void addEmployee(string name, int id, string department, string position, double hourlyRate, double overTime, int hours, char userChoice){
+            Node *newNode, *nodePtr;
+            newNode = new Node(name,id,department,position, hourlyRate,  overTime, hours, userChoice);
+            if (head == nullptr)
+            {
+                head = newNode;
+            }
+            else{
+                nodePtr = head;
+                while (nodePtr->next != nullptr)
+                {
+                    nodePtr = nodePtr->next;
+                }
+                nodePtr->next = newNode;
+            }
+            cout << "Employee added successfully!" << endl;
+        }
+        void input(){
+            string name;
+            int id;
+            string department;
+            string position;
+            double hourlyRate;
+            double overTime;
+            int hours;
+            char userChoice;
+            int size;
+            cout << "Enter Number of Employees: ";
+            cin >> size;
+            cin.ignore();
+            cout<<endl;
+            for (int i = 0; i < size; i++)
+            {
+                cout << "\t\t Employee "<<i+1<<":"<<endl;
+                cout << "\t\t\t Name: ";
+                getline(cin, name);
+                cout << "\t\t\t EMPLOYEE I'D: ";
+                cin >> id;
+                cin.ignore();
+                cout << "\t\t\t Department: ";
+                cin >> department;
+                cout << "\t\t\t Position: ";
+                cin >> position;
+                cout << "\t\t\t Hourly Rate: ";
+                cin >> hourlyRate;
+                cout << "\t\t\t Hours Worked: ";
+                cin >> hours;
+                cout << "\t\t do salary employee "<<i+1<< "get any overtime (y/n): ";
+                cin >> userChoice;
+                if (userChoice == 'y' || userChoice == 'Y' )
+                {
+                    cout<< "\t\t\t Over Time Hours: ";
+                    cin>>overTime;
+                }
+                else if (userChoice == 'n' || userChoice == 'N')
+                {                
+                    overTime = 0.0;
+                }
+                cin.ignore();
+                cout<<endl;
+                addEmployee(name,id,department,position, hourlyRate,  overTime, hours, userChoice);    
+            }
+                
+        }
+        void generateReport(SalaryCalculator& salaryCalculator) {
+            if (head == nullptr) {
+                cout << "No employees in the system to generate a report." << endl;
+                return;
+            }
+
+            Node* nodePtr = head;
+
+            cout << "=========================================================================================" << endl;
+            cout << setw(10) << left << "ID"
+                << setw(20) << left << "Name"
+                << setw(15) << left << "Department"
+                << setw(15) << left << "Position"
+                << setw(15) << left << "Gross Salary"
+                << setw(10) << left << "Tax"
+                << setw(15) << left << "Deductions"
+                << setw(15) << left << "Net Salary"
+                << endl;
+            cout << "=========================================================================================" << endl;
+
+            while (nodePtr != nullptr) {
+                double gross = salaryCalculator.grossSalary(*nodePtr); // Corrected usage
+                double tax = salaryCalculator.calculateTax(*nodePtr);  // Corrected usage
+                double deduction = salaryCalculator.calculateDeduction(*nodePtr);
+                double net = salaryCalculator.netSalary(*nodePtr);     // Corrected usage
+
+                cout << setw(10) << left << nodePtr->id
+                    << setw(20) << left << nodePtr->name
+                    << setw(15) << left << nodePtr->department
+                    << setw(15) << left << nodePtr->position
+                    << setw(15) << left << fixed << setprecision(2) << gross
+                    << setw(10) << left << fixed << setprecision(2) << tax
+                    << setw(15) << left << fixed << setprecision(2) << deduction
+                    << setw(15) << left << fixed << setprecision(2) << net << endl;
+
+                nodePtr = nodePtr->next;
+            }
+            cout << "=========================================================================================" << endl;
+        }
+        void deleteEmployee(int EmpId) {
+            Node* nodePtr = head;
+            if (head == nullptr) {
+                cout << "Employee not Found!" << endl;
+                return;
+            }
+
+            if (head->id == EmpId) {
+                Node* temp = head;
+                head = head->next;
+                delete temp;
+                cout << "Employee with ID: " << EmpId << " Deleted." << endl;
+                return;  
+            }
+
+            while (nodePtr != nullptr && nodePtr->next != nullptr) {  
+                if (nodePtr->next->id == EmpId) {
+                    Node* temp = nodePtr->next;
+                    nodePtr->next = nodePtr->next->next;
+                    delete temp;
+                    cout << "Employee with ID: " << EmpId << " Deleted." << endl;
+                    return;  
+                }
+                nodePtr = nodePtr->next;
+            }
+
+            cout << "Employee with ID: " << EmpId << " Not Found!" << endl;
+        }
+        void viewSalary(int empID){
+            Node* nodePtr = head;
+            if (head == nullptr)
+            {
+                cout<<"Employee with ID: "<<empID<<" Not Found!"<<endl;
+                return;
+            }
+            while (nodePtr != nullptr)
+            {
+                if (nodePtr->id == empID)
+                {
+                    cout << "=========================================" << endl;
+                    cout << "\tEmployee Details" << endl;
+                    cout << "=========================================" << endl;
+                    cout << "Name        : " << nodePtr->name << endl;
+                    cout << "ID          : " << nodePtr->id << endl;
+                    cout << "Department  : " << nodePtr->department << endl;
+                    cout << "Position    : " << nodePtr->position << endl;
+                    cout << "Hourly Rate : " << fixed << setprecision(2) << nodePtr->hourlyRate << endl;
+                    cout << "Hours Worked: " << nodePtr->hours << endl;
+                    if (nodePtr->overTime > 0) {
+                        cout << "Overtime    : " << nodePtr->overTime << endl;
+                    } 
+                    else {
+                        cout << "Overtime    : No Overtime" << endl;
+                    }
+                    cout << "=========================================" << endl;
+                    cout<<endl;
+                    cout<<endl;
+                    return; 
+                }
+                nodePtr = nodePtr->next;
+            }
+            cout << "Employee with ID: " << empID << " Not Found!" << endl;
+        }
+};
+// Queue for Leave Mangement
+class leaveQueue{
+    private:
+        leaveRequest *front, *rear;
+    public:
+        leaveQueue(){
+            this->front = nullptr;
+            this->rear = nullptr;
+        }    
+        bool isEmpty(){
+            if (front == nullptr)
+            {
+                return true;
+            }
+            return false;
+        }
+        void enQueue(int empID, string empName, int days, string reason){
+            leaveRequest *newNode = new leaveRequest(empID, empName, days, reason);
+            if (isEmpty())
+            {
+                front = rear = newNode;
+            }
+            else
+            {
+                rear->next = newNode;
+                rear = newNode;
+            }
+            cout << "Leave request added for Employee ID: " << empID << endl;
+        }
+        void deQueue(){
+            if (isEmpty()) {
+                cout << "No leave requests to process!" << endl;
+                return;
+            }
+            leaveRequest* nodePtr = front;
+            cout << "Processing leave request for Employee ID: " << front->empID << " (Name: " << front->empName << ")" << endl;
+            front = front->next;
+            delete nodePtr;
+
+            if (front == nullptr) {
+                rear = nullptr; 
+            }
+        }
+        void display() {
+            if (isEmpty()) {
+                cout << "No leave requests in the system!" << endl;
+                return;
+            }
+            leaveRequest* nodePtr = front;
+            cout << "\nPending Leave Requests:" << endl;
+            cout << "=========================================" << endl;
+            while (nodePtr != nullptr) {
+                cout << "Employee ID: " << nodePtr->empID << "\nName: " << nodePtr->empName << "\nDays: " << nodePtr->days << "\nReason: " << nodePtr->reason << endl;
+                cout << "-----------------------------------------" << endl;
+                nodePtr = nodePtr->next;
+            }
+        }
+
+        void requestLeave(){
+            int empID, days;
+            string empName, reason;
+            cin.ignore();
+            cout<<"Enter Name: ";
+            getline(cin, empName);
+            cout<<"Enter ID: ";
+            cin>>empID;
+            cout<<"Enter Number of Days: ";
+            cin>>days;
+            cin.ignore();
+            cout<<"Enter Reason of Leave: ";
+            getline(cin, reason);
+            enQueue(empID, empName, days, reason);
+        }
+        void processLeave(){
+            while (!isEmpty())
+            {
+                if (isEmpty()) {
+                    cout << "No leave requests to process!" << endl;
+                    return;
+                }
+                leaveRequest* nodePtr;
+                nodePtr = front;
+                cout << "\nProcessing leave request for Employee Name: " << nodePtr->empName << "\n";
+                cout << "Employee ID: " << nodePtr->empID << "\n";
+                cout << "No of Days: " << nodePtr->days << "\n";
+                cout << "Reason: " << nodePtr->reason << "\n";
+                char choice;
+                cout << "Approve this request? (y/n): ";
+                cin>>choice;
+                if (choice == 'y' || choice == 'Y')
+                {
+                    deQueue();
+                    cout<<"Leave Request Approved!"<<endl;
+                }
+                else
+                {
+                    deQueue();
+                    cout<<"Leave Request Rejected!"<<endl;
+                }
+            }
+        }
+};
+
+class Menu{
+    public:
+        void adminMenu(EmployeePayroll &emp, SalaryCalculator& salaryCalculator, leaveQueue& queue ) {
+            int choice;
+            do {
+                cout << "=========================================" << endl;
+                cout << "\t\tADMIN MENU" << endl;
+                cout << "=========================================" << endl;
+                cout << "1. Add Employee\n";
+                cout << "2. Delete Employee \n";
+                cout << "3. Generate Reports \n";
+                cout << "4. Process Leave Requests \n";
+                cout << "5. Logout\n";
+                cout << "Enter your Choice (1-4): ";
+                cin >> choice;
+
+                switch (choice) {
+                case 1:
+                    emp.input();
+                    break;
+                case 2:
+                    int EmpId;
+                    cout<<"Enter ID of Employee: ";
+                    cin>>EmpId;
+                    emp.deleteEmployee(EmpId);
+                    break;
+                case 3:
+                    emp.generateReport(salaryCalculator);
+                    break;   
+                case 4:
+                    queue.processLeave();
+                    break;
+                case 5:
+                    cout << "Logging out...\n";
+                    return;
+                default:
+                    cout << "Invalid option! Please try again.\n";
+                    break;
+                }
+            } while (choice != 5);
+        }
+        void employeeMenu(EmployeePayroll &emp, leaveQueue& queue){
+            int choice;
+            do
+            {
+                cout<<"========================================="<<endl;
+                cout<<"\t\tEmployee MENU"<<endl;
+                cout<<"========================================="<<endl;
+                cout<<"1. View My Salary.\n";
+                cout<<"2. Request for Leave.\n";
+                cout << "3. Logout\n";
+                cout<<"Enter your Choice(1,2..): ";
+                cin>>choice;
+                
+                switch (choice)
+                {
+                case 1:
+                    int empID;
+                    cout<<"Enter Your ID: ";
+                    cin>>empID;
+                    emp.viewSalary(empID);
+                    break;
+                case 2:
+                    queue.requestLeave();    
+                    break;
+                case 3:
+                    cout << "Logging out...\n";
+                    return;
+                default:
+                    cout << "Invalid option! Please try again.\n";
+                    break;
+                }
+            } while (choice != 3);
+        }
+};
+
+int main() {
     cout << endl;
-    cout << "\t\t Enter Number of Employees: ";
-    cin >> size;
-    cin.ignore();
-    cout<<endl;
-    Employee_PayRoll employees[size];
-    for (int i = 0; i < size; i++)
-    {
-        cout << "\t\t Employee "<<i+1<<":"<<endl;
-        cout << "\t\t\t Name: ";
-        getline(cin, employees[i].name);
-        cout << "\t\t\t EMPLOYEE I'D: ";
-        cin >> employees[i].id;
-        cin.ignore();
-        cout << "\t\t\t Department: ";
-        cin >> employees[i].department;
-        cout << "\t\t\t Position: ";
-        cin >> employees[i].position;
-        cout << "\t\t\t Hourly Rate: ";
-        cin >> employees[i].hourlyRate;
-        cout << "\t\t\t Hours Worked: ";
-        cin >> employees[i].hours;
-        cout << "\t\t do salary employee "<<i+1<< "get overtime (y/n): ";
-        cin >> employees[i].userChoice;
-        if (employees[i].userChoice == 'y' || employees[i].userChoice == 'Y' )
-        {
-            cout<< "\t\t\t Over Time Hours: ";
-            cin>>employees[i].overTime;
-        }
-        else if (employees[i].userChoice == 'n' || employees[i].userChoice == 'N')
-        {                
-            employees[i].overTime = 0.0;
-        }
-        cin.ignore();
-        cout<<endl;
+    cout << endl;
+    cout << "===============================================================================================================================================================================" << endl;
+    cout << endl;
+    cout << "\t\t\t\t\t\t\t\t  EMPLOYEES PAYROLL SYSTEM\t\t\t" << endl;
+    cout << endl;
+    cout << "===============================================================================================================================================================================" << endl;
+    cout << endl;
+
+    EmployeePayroll emp; 
+    SalaryCalculator salaryCalculator;
+    leaveQueue queue;
+
+    while (true) {
+        cout << "=============================" << endl;
+        cout << "1. Login" << endl;
+        cout << "2. Exit" << endl;
+        cout << "=============================" << endl;
+        int choice;
+        cout << "Enter Choice: ";
+        cin >> choice;
+
+        if (choice == 2) {
+            cout << "Exiting the system...\n";
+            break;
         }
 
-        //----------------------------Output-------------------------
+        string role;
+        while (role.empty()) {
+            role = login();
+            if (role.empty()) {
+                char retry;
+                cout << "Would you like to retry? (y/n): ";
+                cin >> retry;
+                if (retry == 'n' || retry == 'N') {
+                    cout << "Exiting the system...\n";
+                    return 0;
+                }
+            }
+        }
 
-    cout <<endl;
-    cout <<endl;
-    cout<<"------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"<<endl;
-    cout <<endl;
-    cout<<"\t\t\t\t\t\t\t\t EMPLOYEES Salaries\t\t\t"<<endl;
-    cout <<endl;
-    cout<<"------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"<<endl;
-    cout <<endl;
-        
-    cout << "\t\t\t-----------------------------------------------------------------------------------------------------------------" << endl;
-    cout << "\t\t\t| I'D\t| NAME\t\t| DEPARTMENT\t| POSITION\t| GROSS EARNING\t| DEDUCTION\t| TAXES\t| TOTAL SALARY\t|" << endl;
-    cout << "\t\t\t-----------------------------------------------------------------------------------------------------------------" << endl;
-    for (int i = 0; i < size; i++)
-    {
-        cout<<"\t\t\t| "<<employees[i].id<<"\t| "<<employees[i].name<<"\t| "<<employees[i].department<<"\t\t| "<<employees[i].position<<"\t| "
-            <<grossSalary(employees[i])<<"  \t| "<<calculateDeduction(employees[i])<<"\t\t| "<<calculateTax(employees[i])<<"  | "
-            <<totalSalary(employees[i])<<"\t| "<<endl;                                                                                 
+        Menu menu;
+        if (role == "Admin") {
+            menu.adminMenu(emp, salaryCalculator, queue);
+        } else if (role == "Employee") {
+            menu.employeeMenu(emp, queue);
+        } else {
+            cout << "Invalid Information! Please try again..." << endl;
+        }
+
+        role = ""; 
     }
-    cout << "\t\t\t------------------------------------------------------------------------------------------------------------------" << endl;
-    cout<<endl;        
-    cout<<endl;  
-    cout<<endl;
-         
+
     return 0;
 }
